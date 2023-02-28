@@ -5,9 +5,17 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddSignalR();
-
+builder.Services.AddCors(option =>
+{
+    option.AddDefaultPolicy(builder =>
+        {
+            builder.WithOrigins("https://signalrdeli.service.signalr.net")
+            .AllowAnyHeader()
+            .WithMethods("GET", "POST")
+            .AllowCredentials();
+        });
+});
 var app = builder.Build();
-
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -20,7 +28,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseCors();
 app.UseAuthorization();
 
 app.MapControllerRoute(
