@@ -21,12 +21,28 @@
 <p id="demo"></p>
 <button id="send" type="button" class="btn btn-primary">Send Message</button>
 
+<div class="form-group row">
+    <label for="Restaurant" class="col-2 col-form-label">RestaurantName</label>
+    <div class="col col-sm-6">
+        <input id="Restaurant" class="form-control" />
+    </div>
+</div>
+<button id="senddatatodb" type="button" class="btn btn-primary" action="OnPostSubmit">Submit Data To DB</button>
+ @if (ViewData["Message"] != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                alert("@ViewData["Message"]");
+            };
+        </script>
+    }
+<p>Time: @ViewData["Timestamp"]</p>
 <hr>
 
 <p id="messageList"></p>
 
 @section Scripts
-{
+    {
     <!-- <snippet_CDN> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
     <!-- </snippet_CDN> -->

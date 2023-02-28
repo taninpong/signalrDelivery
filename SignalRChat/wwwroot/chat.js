@@ -37,7 +37,6 @@ document.addEventListener("DOMContentLoaded", () => {
         //p.textContent = `${user}: ${message}`;
         p.textContent = date.toLocaleString().concat("Start Status SignalR : ", connection.state, "ConnectionId : " + connection.connectionId);
         document.getElementById("messageList").appendChild(p);
-
         try {
             await connection.start();
             setInterval(myTimer, 5000);
@@ -73,6 +72,5 @@ document.addEventListener("DOMContentLoaded", () => {
         p.textContent = date.toLocaleString().concat("Reconnect Status SignalR : ", connection.state, "ConnectionId : " + connection.connectionId);
         document.getElementById("messageList").appendChild(p);
         //console.log(connection.state)
-    })
-    //function onreconnected(callback: (connectionId?: string) => void)
+    });
 });
