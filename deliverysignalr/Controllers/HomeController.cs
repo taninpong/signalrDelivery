@@ -26,42 +26,73 @@ namespace deliverysignalr.Controllers
             return View();
         }
 
+        public IActionResult Invalid()
+        {
+            return View();
+        }
+        public IActionResult Success()
+        {
+            return View();
+        }
+
+
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-
-        //[HttpGet("[action]")]
-        //public IActionResult dlgsubmit(string restaurantName)
-        //{
-        //    return View("index");
-        //}
-
-
         [HttpPost("[action]")]
-        public IActionResult dlgsubmit([FromBody] logsdeli logsdeli)
+        public IActionResult dlgsubmit([FromBody] Logdelivery logsdeli)
         {
-            MongoClient dbClient = new MongoClient("mongodb://manabackofficedev:l2mLDYnN9kTZXi3eBbYK08am7dpHIjJyMW4jPuLkOT7gMqXvmSygysBGdZ3PqwBYJ3uUoHVrS25TFC0NchAx8w==@manabackofficedev.mongo.cosmos.azure.com:10255/?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@manabackofficedev@");
-            var database = dbClient.GetDatabase("delilogs");
-            var collection = database.GetCollection<logsdeli>("logs");
-            logsdeli._id = Guid.NewGuid().ToString();
-            logsdeli.createDate = DateTime.UtcNow;
-            var logs = logsdeli;
-            collection.InsertOne(logs);
-            return Ok(new {message= "OK" });
+            try
+            {
+                MongoClient dbClient = new MongoClient("mongodb://manabackofficedev:l2mLDYnN9kTZXi3eBbYK08am7dpHIjJyMW4jPuLkOT7gMqXvmSygysBGdZ3PqwBYJ3uUoHVrS25TFC0NchAx8w==@manabackofficedev.mongo.cosmos.azure.com:10255/?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@manabackofficedev@");
+                var database = dbClient.GetDatabase("delilogs");
+                var collection = database.GetCollection<Logdelivery>("logs");
+                var logs = logsdeli;
+                var headerData = GetAllHeaders();
+                logsdeli._id = Guid.NewGuid().ToString();
+                logsdeli.createDate = DateTime.UtcNow;
+                logsdeli.headerData = headerData;
+                collection.InsertOne(logs);
+                return Ok(new { message = "OK", url = "/home/success" });
+            }
+            catch (Exception)
+            {
+                return Ok(new { message = "error", url = "/home/invalid" });
+            }
+            //if (isSuccess == true)
+            //{
+            //    //https://siganlrdelii.azurewebsites.net/home/success
+            //    url = "/home/success";
+            //}
+            //else
+            //{
+            //    //https://siganlrdelii.azurewebsites.net/home/invalid
+            //    url = "/home/invalid";
+            //}
+            //return Ok(new { message = "OK", url = url });
         }
 
-
-
-        public class logsdeli
+        //[HttpGet("GetAllHeaders")]
+        private Dictionary<string, string> GetAllHeaders()
         {
-            public string _id { get; set; }
-            public DateTime? createDate { get; set; }
-            public string restaurantName { get; set; }
-            public IEnumerable<string> logs { get; set; }
+            Dictionary<string, string> requestHeaders =
+               new Dictionary<string, string>();
+            foreach (var header in Request.Headers)
+            {
+                requestHeaders.Add(header.Key, header.Value);
+            }
+            return requestHeaders;
         }
 
+        [HttpGet("GetHeaderData")]
+        public ActionResult<string> GetHeaderData(string headerKey = "sec-ch-ua-platform")
+        {
+            Request.Headers.TryGetValue(headerKey, out var headerValue);
+            return Ok(headerValue);
+        }
     }
 }
